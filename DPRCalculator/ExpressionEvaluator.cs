@@ -142,11 +142,11 @@ namespace DPRCalculator
                         sb.Length = 0;
                     }
                     tokens.Add(c.ToString());
+
+                    continue;
                 }
-                else
-                {
-                    sb.Append(c);
-                }
+
+                sb.Append(c);
             }
 
             if ((sb.Length > 0))
