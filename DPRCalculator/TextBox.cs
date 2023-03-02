@@ -8,7 +8,7 @@ namespace DPRCalculator
     public enum TextAnchor
     {
         Left,
-        Middle,
+        Center,
         Right,
     }
     public class TextBox
@@ -97,7 +97,7 @@ namespace DPRCalculator
                 case TextAnchor.Left:
                     textPos.x = box.x + ((box.height - textPos.y) / 2);
                     break;
-                case TextAnchor.Middle:
+                case TextAnchor.Center:
                     textPos.x = box.x + ((box.width - textPos.x) / 2);
                     break;
                 case TextAnchor.Right:

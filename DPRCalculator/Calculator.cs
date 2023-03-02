@@ -21,21 +21,33 @@ namespace DPRCalculator
         private Toggle _powDToggle = new Toggle(new Circle(1410, 30, 10), 2);
 
         // Output
-        private GroupTextBoxes _damageOutput = new GroupTextBoxes(new Rectangle(500, 50, 308, 60), 3);
+        private OutlinedTextBox _damageText;
+        private GroupTextBoxes _damageOutput;
 
-        private GroupTextBoxes _damagePerHit = new GroupTextBoxes(new Rectangle(500, 105, 308, 60), 3);
-        private GroupTextBoxes _damagePerCrit = new GroupTextBoxes(new Rectangle(500, 160, 308, 60), 3);
+        private OutlinedTextBox _damagePerHitText;
+        private GroupTextBoxes _damagePerHit;
+        private OutlinedTextBox _damagePerCritText;
+        private GroupTextBoxes _damagePerCrit;
 
-        private GroupTextBoxes _hitChanceBox = new GroupTextBoxes(new Rectangle(500, 215, 308, 60), 3);
-        private GroupTextBoxes _critChanceBox = new GroupTextBoxes(new Rectangle(500, 270, 308, 60), 3);
+        private OutlinedTextBox _hitChanceText;
+        private GroupTextBoxes _hitChanceBox;
+        private OutlinedTextBox _critChanceText;
+        private GroupTextBoxes _critChanceBox;
 
-        private GroupTextBoxes _chanceToHitOnce = new GroupTextBoxes(new Rectangle(500, 325, 308, 60), 3);
-        private GroupTextBoxes _chanceToCritOnce = new GroupTextBoxes(new Rectangle(500, 380, 308, 60), 3);
+        private OutlinedTextBox _hitChanceOnceText;
+        private GroupTextBoxes _chanceToHitOnce;
+        private OutlinedTextBox _critChanceOnceText;
+        private GroupTextBoxes _chanceToCritOnce;
 
-        private GroupTextBoxes _powerAttack = new GroupTextBoxes(new Rectangle(500, 435, 308, 60), 3);
-        private GroupTextBoxes _powDifference = new GroupTextBoxes(new Rectangle(500, 490, 308, 60), 3);
-        private GroupTextBoxes _powToHit = new GroupTextBoxes(new Rectangle(500, 545, 308, 60), 3);
-        private GroupTextBoxes _powToHitOnce = new GroupTextBoxes(new Rectangle(500, 600, 308, 60), 3);
+        private OutlinedTextBox _powText;
+        private GroupTextBoxes _powerAttack;
+        private OutlinedTextBox _powDifferenceText;
+        private GroupTextBoxes _powDifference;
+        private OutlinedTextBox _powHitChanceText;
+        private GroupTextBoxes _powToHit;
+        private OutlinedTextBox _powHitChanceOnceText;
+        private GroupTextBoxes _powToHitOnce;
+
 
         private Graph _dprGraph = new Graph(new Rectangle(870, 70, 600, 300), new Color(66, 133, 244, 255), 3, 26, 5, 30, 0, 10);
         private Graph _dprAGraph = new Graph(new Rectangle(870, 70, 600, 300), new Color(219, 68, 55, 255), 3, 26, 5, 30, 0, 10);
@@ -101,6 +113,8 @@ namespace DPRCalculator
 
         public Calculator()
         {
+            InitOutputBoxes();
+
             interactables = new Interactable[]
             {
                 _targetAC,
@@ -115,6 +129,144 @@ namespace DPRCalculator
                 _powAToggle,
                 _powDToggle,
             };
+        }
+
+        private void InitOutputBoxes()
+        {
+            float labelHeight = 30;
+            float dataHeight = 50;
+            float outlineOffset = 4;
+
+            Rectangle rect = new Rectangle(500, 0, 308, labelHeight);
+
+            _damageText = new OutlinedTextBox(rect, 2, 20,
+                new Color(246, 178, 107, 255), Color.BLACK, Color.BLACK,
+                "Damage Per Round", TextAnchor.Center);
+
+            rect.height = dataHeight;
+            rect.y += labelHeight - outlineOffset;
+
+            _damageOutput = new GroupTextBoxes(rect, 3);
+
+            rect.height = labelHeight;
+            rect.y += dataHeight - outlineOffset;
+
+            _damagePerHitText = new OutlinedTextBox(rect, 2, 20,
+                new Color(246, 178, 107, 255), Color.BLACK, Color.BLACK,
+                "Damage Per Hit", TextAnchor.Center);
+
+            rect.height = dataHeight;
+            rect.y += labelHeight - outlineOffset;
+
+            _damagePerHit = new GroupTextBoxes(rect, 3);
+
+            rect.height = labelHeight;
+            rect.y += dataHeight - outlineOffset;
+
+            _damagePerCritText = new OutlinedTextBox(rect, 2, 20,
+                new Color(246, 178, 107, 255), Color.BLACK, Color.BLACK,
+                "Damage Per Crit", TextAnchor.Center);
+
+            rect.height = dataHeight;
+            rect.y += labelHeight - outlineOffset;
+
+            _damagePerCrit = new GroupTextBoxes(rect, 3);
+
+            rect.height = labelHeight;
+            rect.y += dataHeight - outlineOffset;
+
+            _hitChanceText = new OutlinedTextBox(rect, 2, 20,
+                new Color(246, 178, 107, 255), Color.BLACK, Color.BLACK,
+                "Hit Chance", TextAnchor.Center);
+
+            rect.height = dataHeight;
+            rect.y += labelHeight - outlineOffset;
+
+            _hitChanceBox = new GroupTextBoxes(rect, 3);
+
+            rect.height = labelHeight;
+            rect.y += dataHeight - outlineOffset;
+
+            _critChanceText = new OutlinedTextBox(rect, 2, 20,
+                  new Color(246, 178, 107, 255), Color.BLACK, Color.BLACK,
+                  "Crit Chance", TextAnchor.Center);
+
+            rect.height = dataHeight;
+            rect.y += labelHeight - outlineOffset;
+
+            _critChanceBox = new GroupTextBoxes(rect, 3);
+
+            rect.height = labelHeight;
+            rect.y += dataHeight - outlineOffset;
+
+            _hitChanceOnceText = new OutlinedTextBox(rect, 2, 20,
+                new Color(246, 178, 107, 255), Color.BLACK, Color.BLACK,
+                "Chance to Hit Once", TextAnchor.Center);
+
+            rect.height = dataHeight;
+            rect.y += labelHeight - outlineOffset;
+
+            _chanceToHitOnce = new GroupTextBoxes(rect, 3);
+
+            rect.height = labelHeight;
+            rect.y += dataHeight - outlineOffset;
+
+            _critChanceOnceText = new OutlinedTextBox(rect, 2, 20,
+                new Color(246, 178, 107, 255), Color.BLACK, Color.BLACK,
+                "Chance to Crit Once", TextAnchor.Center);
+
+            rect.height = dataHeight;
+            rect.y += labelHeight - outlineOffset;
+
+            _chanceToCritOnce = new GroupTextBoxes(rect, 3);
+
+            rect.height = labelHeight;
+            rect.y += dataHeight - outlineOffset;
+
+            _powText = new OutlinedTextBox(rect, 2, 20,
+               new Color(106, 168, 79, 255), Color.BLACK, Color.BLACK,
+               "Power Attack (-5 +10)", TextAnchor.Center);
+
+            rect.height = dataHeight;
+            rect.y += labelHeight - outlineOffset;
+
+            _powerAttack = new GroupTextBoxes(rect, 3);
+
+            rect.height = labelHeight;
+            rect.y += dataHeight - outlineOffset;
+
+            _powDifferenceText = new OutlinedTextBox(rect, 2, 20,
+                new Color(106, 168, 79, 255), Color.BLACK, Color.BLACK,
+                "Pow Difference", TextAnchor.Center);
+
+            rect.height = dataHeight;
+            rect.y += labelHeight - outlineOffset;
+
+            _powDifference = new GroupTextBoxes(rect, 3);
+
+            rect.height = labelHeight;
+            rect.y += dataHeight - outlineOffset;
+
+            _powHitChanceText = new OutlinedTextBox(rect, 2, 20,
+                 new Color(106, 168, 79, 255), Color.BLACK, Color.BLACK,
+                 "Pow Hit Chance", TextAnchor.Center);
+
+            rect.height = dataHeight;
+            rect.y += labelHeight - outlineOffset;
+
+            _powToHit = new GroupTextBoxes(rect, 3);
+
+            rect.height = labelHeight;
+            rect.y += dataHeight - outlineOffset;
+
+            _powHitChanceOnceText = new OutlinedTextBox(rect, 2, 20,
+                new Color(106, 168, 79, 255), Color.BLACK, Color.BLACK,
+                "Pow Chance to Hit Once", TextAnchor.Center);
+
+            rect.height = dataHeight;
+            rect.y += labelHeight - outlineOffset;
+
+            _powToHitOnce = new GroupTextBoxes(rect, 3);
         }
 
         public void Update()
@@ -272,20 +424,31 @@ namespace DPRCalculator
             for (int x = 0; x < interactables.Length; ++x)
                 interactables[x].Draw();
 
+            _damageText.Draw();
             _damageOutput.Draw();
 
+            _damagePerHitText.Draw();
             _damagePerHit.Draw();
+            _damagePerCritText.Draw();
             _damagePerCrit.Draw();
 
+            _hitChanceText.Draw();
             _hitChanceBox.Draw();
+            _critChanceText.Draw();
             _critChanceBox.Draw();
 
+            _hitChanceOnceText.Draw();
             _chanceToHitOnce.Draw();
+            _critChanceOnceText.Draw();
             _chanceToCritOnce.Draw();
 
+            _powText.Draw();
             _powerAttack.Draw();
+            _powDifferenceText.Draw();
             _powDifference.Draw();
+            _powHitChanceText.Draw();
             _powToHit.Draw();
+            _powHitChanceOnceText.Draw();
             _powToHitOnce.Draw();
 
             Raylib.DrawRectangleRec(new Rectangle(830, 50, 650, 360), Color.RAYWHITE);

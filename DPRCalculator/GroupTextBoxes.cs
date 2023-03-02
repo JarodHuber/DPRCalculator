@@ -34,7 +34,7 @@ namespace DPRCalculator
 
             for (int x = 0; x < boxCount; ++x)
             {
-                boxes[x] = new TextBox(new Rectangle(xPos, box.y + outline, width, height), fontSize, TextAnchor.Middle);
+                boxes[x] = new TextBox(new Rectangle(xPos, box.y + outline, width, height), fontSize, TextAnchor.Center);
                 xPos += width + outline;
             }
         }
