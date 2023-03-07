@@ -72,59 +72,59 @@ namespace DPRCalculator
             Raylib.DrawCircleV(_points[_points.Length - 1], _pointRad, _color);
         }
 
-        public static int RoundGraphSize(int x)
+        public static float RoundGraphSize(float x)
         {
-            int scale = x == 0 ? 0 : Utils.Digits_IfChain(x);
+            int scale = x == 0 ? 0 : Utils.Digits_IfChain((int)x);
             scale = (int)MathF.Pow(10, scale);
 
             if (x < 0.125f * scale)
-                return x + (int)((0.025f * scale) - (x % (0.025f * scale)));
+                return x + (0.025f * scale) - (x % (0.025f * scale));
 
             if (x < 0.25f * scale)
-                return x + (int)((0.05f * scale) - (x % (0.05f * scale)));
+                return x + (0.05f * scale) - (x % (0.05f * scale));
 
             if (x < 0.5f * scale)
-                return x + (int)((0.1f * scale) - (x % (0.1f * scale)));
+                return x + (0.1f * scale) - (x % (0.1f * scale));
 
             if (x < 0.8f * scale)
-                return x + (int)((0.2f * scale) - (x % (0.2f * scale)));
+                return x + (0.2f * scale) - (x % (0.2f * scale));
 
             scale *= 10;
-            return x + (int)((0.025f * scale) - (x % (0.025f * scale))); ;
+            return x + (0.025f * scale) - (x % (0.025f * scale)); 
         }
-        public static int RoundGraphSize(int x, out float scale, out float magnitude)
+        public static float RoundGraphSize(float x, out float scale, out float magnitude)
         {
             scale = 0;
-            magnitude = x == 0 ? 0 : Utils.Digits_IfChain(x);
+            magnitude = x == 0 ? 0 : Utils.Digits_IfChain((int)x);
             magnitude = (int)MathF.Pow(10, magnitude);
 
             if (x < 0.125f * magnitude)
             {
                 scale = 0.025f;
-                return x + (int)((0.025f * magnitude) - (x % (0.025f * magnitude)));
+                return x + (0.025f * magnitude) - (x % (0.025f * magnitude));
             }
 
             if (x < 0.25f * magnitude)
             {
                 scale = 0.05f;
-                return x + (int)((0.05f * magnitude) - (x % (0.05f * magnitude)));
+                return x + (0.05f * magnitude) - (x % (0.05f * magnitude));
             }
 
             if (x < 0.5f * magnitude)
             {
                 scale = 0.1f;
-                return x + (int)((0.1f * magnitude) - (x % (0.1f * magnitude)));
+                return x + (0.1f * magnitude) - (x % (0.1f * magnitude));
             }
 
             if (x < 0.8f * magnitude)
             {
                 scale = 0.2f;
-                return x + (int)((0.2f * magnitude) - (x % (0.2f * magnitude)));
+                return x + (0.2f * magnitude) - (x % (0.2f * magnitude));
             }
 
             magnitude *= 10;
             scale = 0.025f;
-            return x + (int)((0.025f * magnitude) - (x % (0.025f * magnitude)));
+            return x + (0.025f * magnitude) - (x % (0.025f * magnitude));
         }
     }
 }

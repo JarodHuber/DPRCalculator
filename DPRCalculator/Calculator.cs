@@ -447,7 +447,7 @@ namespace DPRCalculator
                 _maxGraphSizes[5] = MathF.Max(_maxGraphSizes[5], powD);
             }
 
-            int maxY = Graph.RoundGraphSize((int)GraphScale);
+            float maxY = Graph.RoundGraphSize(GraphScale);
 
             _dprGraph.UpdateScale(maxY);
             _dprGraph.UpdatePoints(_dprByAC);
@@ -514,25 +514,27 @@ namespace DPRCalculator
                 Raylib.DrawText(x.ToString(), 870 + (int)(600.0f * ((x - 5) / 25.0f)) - textSize, 375, 16, Color.BLACK);
             }
 
-            int data = Graph.RoundGraphSize((int)GraphScale, out float scale, out float magnitude);
+            float scale = 0;
+            float magnitude = 0;
+            float data = (GraphScale != 0) ? Graph.RoundGraphSize(GraphScale, out scale, out magnitude) : 0;
 
             // Draw graph y axis
             if (data != 0)
             {
                 int iterator = 0;
-                int info = data;
+                float info = data;
                 while (info > 0)
                 {
                     if (scale == .025f && magnitude == 100)
                         info = data - (2 * iterator);
                     else
-                        info = data - (int)((scale * magnitude) * iterator);
+                        info = data - (scale * magnitude) * iterator;
 
-                    info = (int)MathF.Max(info, 0);
-                    int textSize = Raylib.MeasureText(info.ToString(), 16);
-                    int yPos = 70 + (int)(300.0f * (1 - ((float)info / (float)data))) - 8;
+                    info = MathF.Max(info, 0);
+                    int textSize = Raylib.MeasureText(info.ToString("0.###"), 16);
+                    int yPos = 70 + (int)(300.0f * (1 - (info / data))) - 8;
 
-                    Raylib.DrawText(info.ToString(), 865 - textSize, yPos, 16, Color.BLACK);
+                    Raylib.DrawText(info.ToString("0.###"), 865 - textSize, yPos, 16, Color.BLACK);
                     if(info != 0)
                         Raylib.DrawLineEx(new Vector2(870, yPos + 8), new Vector2(1480, yPos + 8), 4, Color.LIGHTGRAY);
 
