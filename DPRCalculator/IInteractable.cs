@@ -2,7 +2,7 @@
 
 namespace DPRCalculator
 {
-    public interface Interactable
+    public interface IInteractable
     {
         public bool AttemptInteract();
 

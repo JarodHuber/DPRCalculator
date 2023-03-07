@@ -5,7 +5,7 @@ using Raylib_cs;
 
 namespace DPRCalculator
 {
-    class Toggle : Interactable
+    class Toggle : IInteractable
     {
         private Circle _circ;
         private float _outline;

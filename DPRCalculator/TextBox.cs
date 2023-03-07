@@ -13,101 +13,87 @@ namespace DPRCalculator
     }
     public class TextBox
     {
-        private Rectangle box;
-        private string text;
+        protected Rectangle _rect;
+        private string _text;
 
-        private int textSize;
-        protected Color textColor;
-        private Color boxColor;
+        private int _fontSize;
+        protected Color _textColor;
+        private Color _backgroundColor;
 
-        private TextAnchor anchor;
+        private TextAnchor _textAnchor;
 
-        public Rectangle Bounds
-        {
-            get => box;
-        }
         public virtual string Text
         {
-            get => text;
+            get => _text;
         }
 
         #region Constructors
-        public TextBox()
+        public TextBox() : this(new Rectangle(0, 0, 50, 50), 10)
         {
-            box = new Rectangle(0, 0, 50, 50);
-            text = "";
+        }
+        public TextBox(Rectangle rect, int fontSize) : this(rect, fontSize, "")
+        {
+        }
+        public TextBox(Rectangle rect, int fontSize, TextAnchor anchor) : this(rect, fontSize, "", TextAnchor.Left)
+        {
+        }
+        public TextBox(Rectangle rect, int fontSize, string text) : this(rect, fontSize, text, TextAnchor.Left)
+        {
+        }
+        public TextBox(Rectangle rect, int fontSize, string text, TextAnchor anchor) : this(rect, fontSize, Color.WHITE, Color.BLACK, text, anchor)
+        {
+        }
+        public TextBox(Rectangle rect, int fontSize, Color bgColor, Color textColor) : this(rect, fontSize, bgColor, textColor, "")
+        {
+        }
+        public TextBox(Rectangle rect, int fontSize, Color bgColor, Color textColor, TextAnchor anchor) : this(rect, fontSize, bgColor, textColor, "", anchor)
+        {
+        }
+        public TextBox(Rectangle rect, int fontSize, Color bgColor, Color textColor, string text) : this(rect, fontSize, bgColor, textColor, text, TextAnchor.Left)
+        {
+        }
+        public TextBox(Rectangle rect, int fontSize, Color bgColor, Color textColor, string text, TextAnchor anchor)
+        {
+            _rect = rect;
+            _text = text;
 
-            textSize = 10;
-            textColor = Color.BLACK;
-            boxColor = Color.WHITE;
+            _fontSize = fontSize;
+            _textColor = textColor;
+            _backgroundColor = bgColor;
 
-            anchor = TextAnchor.Left;
-        }
-        public TextBox(Rectangle rect, int fontSize) : this()
-        {
-            box = rect;
-            textSize = fontSize;
-        }
-        public TextBox(Rectangle rect, int fontSize, TextAnchor anchor) : this(rect, fontSize)
-        {
-            this.anchor = anchor;
-        }
-        public TextBox(Rectangle rect, int fontSize, string text) : this(rect, fontSize)
-        {
-            this.text = text;
-        }
-        public TextBox(Rectangle rect, int fontSize, string text, TextAnchor anchor) : this(rect, fontSize, text)
-        {
-            this.anchor = anchor;
-        }
-        public TextBox(Rectangle rect, int fontSize, Color bgColor, Color textColor) : this(rect, fontSize)
-        {
-            boxColor = bgColor;
-            this.textColor = textColor;
-        }
-        public TextBox(Rectangle rect, int fontSize, Color bgColor, Color textColor, TextAnchor anchor) : this(rect, fontSize, bgColor, textColor)
-        {
-            this.anchor = anchor;
-        }
-        public TextBox(Rectangle rect, int fontSize, Color bgColor, Color textColor, string text) : this(rect, fontSize, bgColor, textColor)
-        {
-            this.text = text;
-        }
-        public TextBox(Rectangle rect, int fontSize, Color bgColor, Color textColor, string text, TextAnchor anchor) : this(rect, fontSize, bgColor, textColor, anchor)
-        {
-            this.text = text;
+            _textAnchor = anchor;
         }
         #endregion
 
         public void UpdateText(string newText)
         {
-            text = newText;
+            _text = newText;
         }
 
         public virtual void Draw()
         {
             Vector2 textPos = new Vector2()
             {
-                x = Raylib.MeasureText(text, textSize),
-                y = textSize
+                x = Raylib.MeasureText(_text, _fontSize),
+                y = _fontSize
             };
 
-            switch (anchor)
+            switch (_textAnchor)
             {
                 case TextAnchor.Left:
-                    textPos.x = box.x + ((box.height - textPos.y) / 2);
+                    textPos.x = _rect.x + ((_rect.height - textPos.y) / 2);
                     break;
                 case TextAnchor.Center:
-                    textPos.x = box.x + ((box.width - textPos.x) / 2);
+                    textPos.x = _rect.x + ((_rect.width - textPos.x) / 2);
                     break;
                 case TextAnchor.Right:
-                    textPos.x = box.x + box.width - (textPos.x + ((box.height - textPos.y) / 2));
+                    textPos.x = _rect.x + _rect.width - (textPos.x + ((_rect.height - textPos.y) / 2));
                     break;
             }
-            textPos.y = box.y + (box.height - textPos.y) / 2;
+            textPos.y = _rect.y + (_rect.height - textPos.y) / 2;
 
-            Raylib.DrawRectangleRec(box, boxColor);
-            Raylib.DrawText(text, (int)textPos.x, (int)textPos.y, textSize, textColor);
+            Raylib.DrawRectangleRec(_rect, _backgroundColor);
+            Raylib.DrawText(_text, (int)textPos.x, (int)textPos.y, _fontSize, _textColor);
         }
     }
 }

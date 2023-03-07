@@ -5,7 +5,7 @@ using Raylib_cs;
 
 namespace DPRCalculator
 {
-    class Attack : Interactable
+    class Attack : IInteractable
     {
         private Rectangle box = new Rectangle(0, 0, 265, 60);
 

@@ -13,16 +13,17 @@ namespace DPRCalculator
     }
     #endregion
 
-    class InteractionBox : TextBox, Interactable
+    class InteractionBox : TextBox, IInteractable
     {
-        public const string alpha = "abcdefghijklmnopqrstuvwxyz";
-        public const string numeric = "0123456789";
-        public const string operators = "-+/*^d";
+        public const string c_Alpha = "abcdefghijklmnopqrstuvwxyz";
+        public const string c_Numeric = "0123456789";
+        public const string c_Operators = "-+/*^d";
 
-        private TextBoxDataType type = TextBoxDataType.Normal;
-        private int state = 0;
-        private Timer cursorTimer = new Timer(0.5f);
-        private bool cursorVisible = false;
+        private TextBoxDataType _textType = TextBoxDataType.Normal;
+        private int _inputState = 0;
+
+        private Timer _cursorTimer = new Timer(0.5f);
+        private bool _cursorVisible = false;
 
         private string _internalText = "";
         private Color _internalColor;
@@ -43,11 +44,11 @@ namespace DPRCalculator
         public InteractionBox(Rectangle rect, int fontSize, TextAnchor anchor) : base(rect, fontSize, anchor)
         {
         }
-        public InteractionBox(Rectangle rect, int fontSize, string defaultText) : base(rect, fontSize, defaultText)
+        public InteractionBox(Rectangle rect, int fontSize, string defaultText) : base(rect, fontSize)
         {
             _internalText = defaultText;
         }
-        public InteractionBox(Rectangle rect, int fontSize, string defaultText, TextAnchor anchor) : base(rect, fontSize, defaultText, anchor)
+        public InteractionBox(Rectangle rect, int fontSize, string defaultText, TextAnchor anchor) : base(rect, fontSize, anchor)
         {
             _internalText = defaultText;
         }
@@ -57,11 +58,11 @@ namespace DPRCalculator
         public InteractionBox(Rectangle rect, int fontSize, Color bgColor, Color textColor, TextAnchor anchor) : base(rect, fontSize, bgColor, textColor, anchor)
         {
         }
-        public InteractionBox(Rectangle rect, int fontSize, Color bgColor, Color textColor, string defaultText) : base(rect, fontSize, bgColor, textColor, defaultText)
+        public InteractionBox(Rectangle rect, int fontSize, Color bgColor, Color textColor, string defaultText) : base(rect, fontSize, bgColor, textColor)
         {
             _internalText = defaultText;
         }
-        public InteractionBox(Rectangle rect, int fontSize, Color bgColor, Color textColor, string defaultText, TextAnchor anchor) : base(rect, fontSize, bgColor, textColor, defaultText, anchor)
+        public InteractionBox(Rectangle rect, int fontSize, Color bgColor, Color textColor, string defaultText, TextAnchor anchor) : base(rect, fontSize, bgColor, textColor, anchor)
         {
             _internalText = defaultText;
         }
@@ -69,53 +70,53 @@ namespace DPRCalculator
 
         public InteractionBox(Rectangle rect, int fontSize, TextBoxDataType charTypes) : base(rect, fontSize)
         {
-            type = charTypes;
+            _textType = charTypes;
         }
         public InteractionBox(Rectangle rect, int fontSize, string defaultText, TextBoxDataType charTypes) : base(rect, fontSize, defaultText)
         {
             _internalText = defaultText;
-            type = charTypes;
+            _textType = charTypes;
         }
         public InteractionBox(Rectangle rect, int fontSize, TextAnchor anchor, TextBoxDataType charTypes) : base(rect, fontSize, anchor)
         {
-            type = charTypes;
+            _textType = charTypes;
         }
         public InteractionBox(Rectangle rect, int fontSize, Color bgColor, Color textColor, TextBoxDataType charTypes) : base(rect, fontSize, bgColor, textColor)
         {
-            type = charTypes;
+            _textType = charTypes;
         }
         public InteractionBox(Rectangle rect, int fontSize, Color bgColor, Color textColor, TextAnchor anchor, TextBoxDataType charTypes) : base(rect, fontSize, bgColor, textColor, anchor)
         {
-            type = charTypes;
+            _textType = charTypes;
         }
         public InteractionBox(Rectangle rect, int fontSize, Color bgColor, Color textColor, string defaultText, TextAnchor anchor, TextBoxDataType charTypes) : base(rect, fontSize, bgColor, textColor, anchor)
         {
-            type = charTypes;
+            _textType = charTypes;
             _internalText = defaultText;
         }
         #endregion
 
         public bool AttemptInteract()
         {
-            if(Raylib.CheckCollisionCircleRec(Raylib.GetMousePosition(), Program.mousePosBuffer, Bounds))
+            if(Raylib.CheckCollisionCircleRec(Raylib.GetMousePosition(), Program.mousePosBuffer, _rect))
             {
-                if(state == 0)
+                if(_inputState == 0)
                 {
-                    state = _internalText == "" ? 2 : 1;
-                    cursorVisible = true;
+                    _inputState = _internalText == "" ? 2 : 1;
+                    _cursorVisible = true;
                 }
-                else if (state == 1)
-                    state = 2;
+                else if (_inputState == 1)
+                    _inputState = 2;
 
                 return true;
             }
 
-            state = 0;
+            _inputState = 0;
             return false;
         }
         public void Update()
         { 
-            if (state == 0)
+            if (_inputState == 0)
                 return;
 
             if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
@@ -128,58 +129,58 @@ namespace DPRCalculator
 
             if (key != 0)
             {
-                cursorTimer.Reset();
-                cursorVisible = false;
+                _cursorTimer.Reset();
+                _cursorVisible = false;
             }
 
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_ENTER)) 
             {
-                state = 0;
+                _inputState = 0;
                 return;
             }
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_BACKSPACE) && _internalText != "") 
             {
                 _internalText = _internalText.Remove(_internalText.Length - 1);
 
-                if (state == 1)
-                    state = 2;
+                if (_inputState == 1)
+                    _inputState = 2;
 
                 return;
             }
-            if (state == 1 && Raylib.IsKeyPressed(KeyboardKey.KEY_RIGHT) || Raylib.IsKeyPressed(KeyboardKey.KEY_LEFT))
-                state = 2;
+            if (_inputState == 1 && Raylib.IsKeyPressed(KeyboardKey.KEY_RIGHT) || Raylib.IsKeyPressed(KeyboardKey.KEY_LEFT))
+                _inputState = 2;
 
             while (key != 0) 
             {
-                switch (type)
+                switch (_textType)
                 {
                     case TextBoxDataType.AlphaNumeric:
-                        if (!alpha.Contains((char)key) && !numeric.Contains((char)key))
+                        if (!c_Alpha.Contains((char)key) && !c_Numeric.Contains((char)key))
                             return;
 
                         break;
                     case TextBoxDataType.Numeric:
-                        if (!numeric.Contains((char)key))
+                        if (!c_Numeric.Contains((char)key))
                             return;
 
                         break;
                     case TextBoxDataType.Alpha:
-                        if (!alpha.Contains((char)key))
+                        if (!c_Alpha.Contains((char)key))
                             return;
 
                         break;
                     case TextBoxDataType.Dice:
-                        if (!numeric.Contains((char)key) && !operators.Contains((char)key))
+                        if (!c_Numeric.Contains((char)key) && !c_Operators.Contains((char)key))
                             return;
 
                         break;
                 }
 
-                if (state == 1)
+                if (_inputState == 1)
                 {
                     _internalText = "";
-                    cursorVisible = true;
-                    state = 2;
+                    _cursorVisible = true;
+                    _inputState = 2;
                 }
 
                 _internalText += (char)key;
@@ -191,21 +192,21 @@ namespace DPRCalculator
         {
             UpdateText(_internalText);
 
-            switch (state)
+            switch (_inputState)
             {
                 case 1: // Dim text color
-                    _internalColor = textColor;
-                    textColor.a = (byte)(255 * 0.5f);
+                    _internalColor = _textColor;
+                    _textColor.a = (byte)(255 * 0.5f);
 
                     base.Draw();
 
-                    textColor = _internalColor;
+                    _textColor = _internalColor;
                     return;
                 case 2: // Display Cursor
-                    if (cursorTimer.Check())
-                        cursorVisible = !cursorVisible;
+                    if (_cursorTimer.Check())
+                        _cursorVisible = !_cursorVisible;
 
-                    UpdateText(_internalText + (cursorVisible ? "|" : ""));
+                    UpdateText(_internalText + (_cursorVisible ? "|" : ""));
 
                     base.Draw();
                     return;

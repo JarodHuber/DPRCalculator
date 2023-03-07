@@ -7,45 +7,44 @@ namespace DPRCalculator
 {
     class Calculator
     {
-        // Input
+        // Input ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
         private OutlinedInteractionBox _targetAC = new OutlinedInteractionBox(new Rectangle(50, 50, 50, 50), 2, 20, "13", TextBoxDataType.Numeric);
         private OutlinedInteractionBox _attackCount = new OutlinedInteractionBox(new Rectangle(310, 110, 50, 50), 2, 20, "1", TextBoxDataType.Numeric);
         private Attack _mainAttack = new Attack(new Rectangle(50, 110, 250, 50), 2);
+        private OutlinedInteractionBox _perTurnDamage = new OutlinedInteractionBox(new Rectangle(50, 180, 250, 50), 2, 20, "", TextAnchor.Left, TextBoxDataType.Dice);
 
-        private Toggle _dprToggle = new Toggle(new Circle(910, 30, 10), 2, true);
-        private Toggle _dprAToggle = new Toggle(new Circle(1010, 30, 10), 2, true);
-        private Toggle _dprDToggle = new Toggle(new Circle(1110, 30, 10), 2, true);
+        private LabeledToggle _dprToggle = new LabeledToggle("DPR", 12, 20, new Circle(840, 30, 10), true);
+        private LabeledToggle _dprAToggle = new LabeledToggle("ADV", 12, 20, new Circle(910, 30, 10), true);
+        private LabeledToggle _dprDToggle = new LabeledToggle("DIS", 12, 20, new Circle(980, 30, 10), true);
 
-        private Toggle _powToggle = new Toggle(new Circle(1210, 30, 10), 2);
-        private Toggle _powAToggle = new Toggle(new Circle(1310, 30, 10), 2);
-        private Toggle _powDToggle = new Toggle(new Circle(1410, 30, 10), 2);
+        private LabeledToggle _powToggle = new LabeledToggle("POW", 12, 20, new Circle(1080, 30, 10));
+        private LabeledToggle _powAToggle = new LabeledToggle("POW ADV", 12, 20, new Circle(1150, 30, 10));
+        private LabeledToggle _powDToggle = new LabeledToggle("POW DIS", 12, 20, new Circle(1270, 30, 10));
 
-        // Output
+        // Output ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
         private OutlinedTextBox _damageText;
-        private GroupTextBoxes _damageOutput;
-
         private OutlinedTextBox _damagePerHitText;
-        private GroupTextBoxes _damagePerHit;
         private OutlinedTextBox _damagePerCritText;
-        private GroupTextBoxes _damagePerCrit;
-
         private OutlinedTextBox _hitChanceText;
-        private GroupTextBoxes _hitChanceBox;
         private OutlinedTextBox _critChanceText;
-        private GroupTextBoxes _critChanceBox;
-
         private OutlinedTextBox _hitChanceOnceText;
-        private GroupTextBoxes _chanceToHitOnce;
         private OutlinedTextBox _critChanceOnceText;
+        private OutlinedTextBox _powText;
+        private OutlinedTextBox _powDifferenceText;
+        private OutlinedTextBox _powHitChanceText;
+        private OutlinedTextBox _powHitChanceOnceText;
+
+        private GroupTextBoxes _damageOutput;
+        private GroupTextBoxes _damagePerHit;
+        private GroupTextBoxes _damagePerCrit;
+        private GroupTextBoxes _hitChanceBox;
+        private GroupTextBoxes _critChanceBox;
+        private GroupTextBoxes _chanceToHitOnce;
         private GroupTextBoxes _chanceToCritOnce;
 
-        private OutlinedTextBox _powText;
         private GroupTextBoxes _powerAttack;
-        private OutlinedTextBox _powDifferenceText;
         private GroupTextBoxes _powDifference;
-        private OutlinedTextBox _powHitChanceText;
         private GroupTextBoxes _powToHit;
-        private OutlinedTextBox _powHitChanceOnceText;
         private GroupTextBoxes _powToHitOnce;
 
 
@@ -57,15 +56,17 @@ namespace DPRCalculator
         private Graph _powAGraph = new Graph(new Rectangle(870, 70, 600, 300), new Color(106, 168, 79, 255), 3, 26, 5, 30, 0, 10);
         private Graph _powDGraph = new Graph(new Rectangle(870, 70, 600, 300), new Color(106, 168, 79, 255), 3, 26, 5, 30, 0, 10);
 
-        private int AC = 10;
+        private int _ac = 10;
 
-        private int attackBonus = 0;
-        private float baseDamage;
-        private float critBonus;
-        private int numOfAttacks = 1;
+        private int _attackBonus = 0;
+        private float _baseDamage;
+        private float _critBonus;
+        private float _perTurnBaseDamage;
+        private float _perTurnCritDamage;
+        private int _numOfAttacks = 1;
 
-        private int critRange = 20;
-        private int whifRange = 1;
+        private int _critRange = 20;
+        private int _whifRange = 1;
 
         private Vector2[] _dprByAC =  new Vector2[26];
         private Vector2[] _dprAByAC = new Vector2[26];
@@ -102,24 +103,25 @@ namespace DPRCalculator
 
         private float CritChance
         {
-            get => (21.0f - critRange) / 20.0f;
+            get => (21.0f - _critRange) / 20.0f;
         }
         private float WhifChance
         {
-            get => whifRange / 20.0f;
+            get => _whifRange / 20.0f;
         }
 
-        private Interactable[] interactables;
+        private IInteractable[] interactables;
 
         public Calculator()
         {
             InitOutputBoxes();
 
-            interactables = new Interactable[]
+            interactables = new IInteractable[]
             {
                 _targetAC,
                 _mainAttack,
                 _attackCount,
+                _perTurnDamage,
 
                 _dprToggle,
                 _dprAToggle,
@@ -130,7 +132,7 @@ namespace DPRCalculator
                 _powDToggle,
             };
         }
-
+        // Methods ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
         private void InitOutputBoxes()
         {
             float labelHeight = 30;
@@ -271,7 +273,7 @@ namespace DPRCalculator
 
         public void Update()
         {
-            // Update TextBoxes
+            // Update TextBoxes ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
             bool interactionTest = Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON);
             for (int x = 0; x < interactables.Length; ++x)
             {
@@ -281,50 +283,65 @@ namespace DPRCalculator
                     interactionTest = !interactables[x].AttemptInteract();
             }
 
-            // Parse TextBox data to numbers
+            // Parse TextBox data to numbers ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
             if (_targetAC.Text == "")
-                AC = 0;
-            else if (!int.TryParse(_targetAC.Text, out AC))
+                _ac = 0;
+            else if (!int.TryParse(_targetAC.Text, out _ac))
                 Console.WriteLine("AC is not an int / cannot be parsed");
 
             if (_attackCount.Text == "")
-                numOfAttacks = 0;
-            else if (!int.TryParse(_attackCount.Text, out numOfAttacks))
+                _numOfAttacks = 0;
+            else if (!int.TryParse(_attackCount.Text, out _numOfAttacks))
                 Console.WriteLine("Attack number is not an int / cannot be parsed");
 
-            critBonus = 0;
-            _mainAttack.GetData(out attackBonus, out baseDamage, ref critBonus);
+            _critBonus = 0;
+            _mainAttack.GetData(out _attackBonus, out _baseDamage, ref _critBonus);
 
-            // Calculate
-            float hitChance = ((21.0f - AC) + attackBonus) / 20.0f;
+            _perTurnCritDamage = 0;
+            _perTurnBaseDamage = (float)ExpressionEvaluator.Eval(_perTurnDamage.Text, ref _perTurnCritDamage);
+
+            // Calculate ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+            float hitChance = ((21.0f - _ac) + _attackBonus) / 20.0f;
             hitChance = Utils.Clamp(hitChance, CritChance, 1 - WhifChance);
 
-            float dpr = ((baseDamage * hitChance) + (critBonus * CritChance)) * numOfAttacks;
-            float dprA = ((baseDamage * Advantage(hitChance)) + (critBonus * Advantage(CritChance))) * numOfAttacks;
-            float dprD = ((baseDamage * Disadvantage(hitChance)) + (critBonus * Disadvantage(CritChance))) * numOfAttacks;
+            float hitChancePow = ((21.0f - _ac) + (_attackBonus - 5)) / 20.0f;
+            hitChancePow = Utils.Clamp(hitChancePow, CritChance, 1 - WhifChance);
+
+            float dpr = (((_baseDamage * hitChance) + (_critBonus * CritChance)) * _numOfAttacks);
+            dpr += ((1 - MathF.Pow(1 - hitChance, _numOfAttacks)) * _perTurnBaseDamage);
+            dpr += ((1 - MathF.Pow(1 - hitChance, _numOfAttacks)) * (CritChance / hitChance) * _perTurnCritDamage);
+            float dprA = ((_baseDamage * Advantage(hitChance)) + (_critBonus * Advantage(CritChance))) * _numOfAttacks;
+            dprA += ((1 - MathF.Pow(1 - Advantage(hitChance), _numOfAttacks)) * _perTurnBaseDamage);
+            dprA += ((1 - MathF.Pow(1 - Advantage(hitChance), _numOfAttacks)) * (Advantage(CritChance) / Advantage(hitChance)) * _perTurnCritDamage);
+            float dprD = ((_baseDamage * Disadvantage(hitChance)) + (_critBonus * Disadvantage(CritChance))) * _numOfAttacks;
+            dprD += ((1 - MathF.Pow(1 - Disadvantage(hitChance), _numOfAttacks)) * _perTurnBaseDamage);
+            dprD += ((1 - MathF.Pow(1 - Disadvantage(hitChance), _numOfAttacks)) * (Disadvantage(CritChance) / Disadvantage(hitChance)) * _perTurnCritDamage);
+
+            float pow = (((_baseDamage + 10) * hitChancePow) + (_critBonus * CritChance)) * _numOfAttacks;
+            pow += ((1 - MathF.Pow(1 - hitChancePow, _numOfAttacks)) * _perTurnBaseDamage);
+            pow += ((1 - MathF.Pow(1 - hitChancePow, _numOfAttacks)) * (CritChance / hitChancePow) * _perTurnCritDamage);
+            float powA = (((_baseDamage + 10) * Advantage(hitChancePow)) + (_critBonus * Advantage(CritChance))) * _numOfAttacks;
+            powA += ((1 - MathF.Pow(1 - Advantage(hitChancePow), _numOfAttacks)) * _perTurnBaseDamage);
+            powA += ((1 - MathF.Pow(1 - Advantage(hitChancePow), _numOfAttacks)) * (Advantage(CritChance) / Advantage(hitChancePow)) * _perTurnCritDamage);
+            float powD = (((_baseDamage + 10) * Disadvantage(hitChancePow)) + (_critBonus * Disadvantage(CritChance))) * _numOfAttacks;
+            powD += ((1 - MathF.Pow(1 - Disadvantage(hitChancePow), _numOfAttacks)) * _perTurnBaseDamage);
+            powD += ((1 - MathF.Pow(1 - Disadvantage(hitChancePow), _numOfAttacks)) * (Disadvantage(CritChance) / Advantage(hitChancePow)) * _perTurnCritDamage);
 
             float critMax = 0;
             float critMin = 0;
             double maxDamage = ExpressionEvaluator.Eval(_mainAttack.GetDamageFormula(), ref critMax, DieCalc.Max);
             double minDamage = ExpressionEvaluator.Eval(_mainAttack.GetDamageFormula(), ref critMin, DieCalc.Min);
 
-            float hitChancePow = ((21.0f - AC) + (attackBonus - 5)) / 20.0f;
-            hitChancePow = Utils.Clamp(hitChancePow, CritChance, 1 - WhifChance);
-
-            float pow = (((baseDamage + 10) * hitChancePow) + (critBonus * CritChance)) * numOfAttacks;
-            float powA = (((baseDamage + 10) * Advantage(hitChancePow)) + (critBonus * Advantage(CritChance))) * numOfAttacks;
-            float powD = (((baseDamage + 10) * Disadvantage(hitChancePow)) + (critBonus * Disadvantage(CritChance))) * numOfAttacks;
-
-            // Update TextBoxes
+            // Update TextBoxes ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
             _damageOutput.UpdateText(0, dpr.ToString("0.####"));
             _damageOutput.UpdateText(1, dprA.ToString("0.####"));
             _damageOutput.UpdateText(2, dprD.ToString("0.####"));
 
-            _damagePerHit.UpdateText(0, baseDamage.ToString());
+            _damagePerHit.UpdateText(0, _baseDamage.ToString());
             _damagePerHit.UpdateText(1, maxDamage.ToString());
             _damagePerHit.UpdateText(2, minDamage.ToString());
 
-            _damagePerCrit.UpdateText(0, (baseDamage + critBonus).ToString());
+            _damagePerCrit.UpdateText(0, (_baseDamage + _critBonus).ToString());
             _damagePerCrit.UpdateText(1, (maxDamage + critMax).ToString());
             _damagePerCrit.UpdateText(2, (minDamage + critMin).ToString());
 
@@ -336,13 +353,13 @@ namespace DPRCalculator
             _critChanceBox.UpdateText(1, Advantage(CritChance).ToString(".####"));
             _critChanceBox.UpdateText(2, Disadvantage(CritChance).ToString(".####"));
 
-            _chanceToHitOnce.UpdateText(0, (1 - MathF.Pow(1 - hitChance, numOfAttacks)).ToString(".####"));
-            _chanceToHitOnce.UpdateText(1, (1 - MathF.Pow(1 - Advantage(hitChance), numOfAttacks)).ToString(".####"));
-            _chanceToHitOnce.UpdateText(2, (1 - MathF.Pow(1 - Disadvantage(hitChance), numOfAttacks)).ToString(".####"));
+            _chanceToHitOnce.UpdateText(0, (1 - MathF.Pow(1 - hitChance, _numOfAttacks)).ToString(".####"));
+            _chanceToHitOnce.UpdateText(1, (1 - MathF.Pow(1 - Advantage(hitChance), _numOfAttacks)).ToString(".####"));
+            _chanceToHitOnce.UpdateText(2, (1 - MathF.Pow(1 - Disadvantage(hitChance), _numOfAttacks)).ToString(".####"));
 
-            _chanceToCritOnce.UpdateText(0, (1 - MathF.Pow(1 - CritChance, numOfAttacks)).ToString(".####"));
-            _chanceToCritOnce.UpdateText(1, (1 - MathF.Pow(1 - Advantage(CritChance), numOfAttacks)).ToString(".####"));
-            _chanceToCritOnce.UpdateText(2, (1 - MathF.Pow(1 - Disadvantage(CritChance), numOfAttacks)).ToString(".####"));
+            _chanceToCritOnce.UpdateText(0, (1 - MathF.Pow(1 - CritChance, _numOfAttacks)).ToString(".####"));
+            _chanceToCritOnce.UpdateText(1, (1 - MathF.Pow(1 - Advantage(CritChance), _numOfAttacks)).ToString(".####"));
+            _chanceToCritOnce.UpdateText(2, (1 - MathF.Pow(1 - Disadvantage(CritChance), _numOfAttacks)).ToString(".####"));
 
             _powerAttack.UpdateText(0, pow.ToString("0.####"));
             _powerAttack.UpdateText(1, powA.ToString("0.####"));
@@ -356,9 +373,9 @@ namespace DPRCalculator
             _powToHit.UpdateText(1, Advantage(hitChancePow).ToString(".####"));
             _powToHit.UpdateText(2, Disadvantage(hitChancePow).ToString(".####"));
 
-            _powToHitOnce.UpdateText(0, (1 - MathF.Pow(1 - hitChancePow, numOfAttacks)).ToString(".####"));
-            _powToHitOnce.UpdateText(1, (1 - MathF.Pow(1 - Advantage(hitChancePow), numOfAttacks)).ToString(".####"));
-            _powToHitOnce.UpdateText(2, (1 - MathF.Pow(1 - Disadvantage(hitChancePow), numOfAttacks)).ToString(".####"));
+            _powToHitOnce.UpdateText(0, (1 - MathF.Pow(1 - hitChancePow, _numOfAttacks)).ToString(".####"));
+            _powToHitOnce.UpdateText(1, (1 - MathF.Pow(1 - Advantage(hitChancePow), _numOfAttacks)).ToString(".####"));
+            _powToHitOnce.UpdateText(2, (1 - MathF.Pow(1 - Disadvantage(hitChancePow), _numOfAttacks)).ToString(".####"));
 
             _maxGraphSizes[0] = 0.0f;
             _maxGraphSizes[1] = 0.0f;
@@ -367,35 +384,67 @@ namespace DPRCalculator
             _maxGraphSizes[4] = 0.0f;
             _maxGraphSizes[5] = 0.0f;
 
-            // Graphs
-            for (int x = 0; x < 26; ++x)
+            // Graphs ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+            for (int i = 0; i < 26; ++i)
             {
-                hitChance = ((21.0f - (5 + x)) + attackBonus) / 20.0f;
+                // Set X axis for graphs (AC) ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+                float x = 5 + i;
+
+                _dprByAC[i].x = x;
+                _dprAByAC[i].x = x;
+                _dprDByAC[i].x = x;
+
+                _powByAC[i].x = x;
+                _powAByAC[i].x = x;
+                _powDByAC[i].x = x;
+
+                // Calculate DPRs at the specified AC ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+                hitChance = ((21.0f - x) + _attackBonus) / 20.0f;
                 hitChance = Utils.Clamp(hitChance, CritChance, 1 - WhifChance);
 
-                _dprByAC[x].x = 5 + x;
-                _dprByAC[x].y = ((baseDamage * hitChance) + (critBonus * CritChance)) * numOfAttacks;
-                _dprAByAC[x].x = 5 + x;
-                _dprAByAC[x].y = ((baseDamage * Advantage(hitChance)) + (critBonus * CritChance)) * numOfAttacks;
-                _dprDByAC[x].x = 5 + x;
-                _dprDByAC[x].y = ((baseDamage * Disadvantage(hitChance)) + (critBonus * CritChance)) * numOfAttacks;
+                hitChancePow = ((21.0f - x) + (_attackBonus - 5)) / 20.0f;
+                hitChancePow = Utils.Clamp(hitChancePow, CritChance, 1 - WhifChance);
 
-                hitChance = ((21.0f - (5 + x)) + (attackBonus - 5)) / 20.0f;
-                hitChance = Utils.Clamp(hitChance, CritChance, 1 - WhifChance);
+                dpr = (((_baseDamage * hitChance) + (_critBonus * CritChance)) * _numOfAttacks);
+                dpr += ((1 - MathF.Pow(1 - hitChance, _numOfAttacks)) * _perTurnBaseDamage);
+                dpr += ((1 - MathF.Pow(1 - hitChance, _numOfAttacks)) * (CritChance / hitChance) * _perTurnCritDamage);
 
-                _powByAC[x].x = 5 + x;
-                _powByAC[x].y = (((baseDamage + 10) * hitChance) + (critBonus * CritChance)) * numOfAttacks;
-                _powAByAC[x].x = 5 + x;
-                _powAByAC[x].y = (((baseDamage + 10) * Advantage(hitChance)) + (critBonus * CritChance)) * numOfAttacks;
-                _powDByAC[x].x = 5 + x;
-                _powDByAC[x].y = (((baseDamage + 10) * Disadvantage(hitChance)) + (critBonus * CritChance)) * numOfAttacks;
+                dprA = ((_baseDamage * Advantage(hitChance)) + (_critBonus * Advantage(CritChance))) * _numOfAttacks;
+                dprA += ((1 - MathF.Pow(1 - Advantage(hitChance), _numOfAttacks)) * _perTurnBaseDamage);
+                dprA += ((1 - MathF.Pow(1 - Advantage(hitChance), _numOfAttacks)) * (Advantage(CritChance) / Advantage(hitChance)) * _perTurnCritDamage);
 
-                _maxGraphSizes[0] = MathF.Max(_maxGraphSizes[0], _dprByAC[x].y);
-                _maxGraphSizes[1] = MathF.Max(_maxGraphSizes[1], _dprAByAC[x].y);
-                _maxGraphSizes[2] = MathF.Max(_maxGraphSizes[2], _dprDByAC[x].y);
-                _maxGraphSizes[3] = MathF.Max(_maxGraphSizes[3], _powByAC[x].y);
-                _maxGraphSizes[4] = MathF.Max(_maxGraphSizes[4], _powAByAC[x].y);
-                _maxGraphSizes[5] = MathF.Max(_maxGraphSizes[5], _powDByAC[x].y);
+                dprD = ((_baseDamage * Disadvantage(hitChance)) + (_critBonus * Disadvantage(CritChance))) * _numOfAttacks;
+                dprD += ((1 - MathF.Pow(1 - Disadvantage(hitChance), _numOfAttacks)) * _perTurnBaseDamage);
+                dprD += ((1 - MathF.Pow(1 - Disadvantage(hitChance), _numOfAttacks)) * (Disadvantage(CritChance) / Disadvantage(hitChance)) * _perTurnCritDamage);
+
+                pow = (((_baseDamage + 10) * hitChancePow) + (_critBonus * CritChance)) * _numOfAttacks;
+                pow += ((1 - MathF.Pow(1 - hitChancePow, _numOfAttacks)) * _perTurnBaseDamage);
+                pow += ((1 - MathF.Pow(1 - hitChancePow, _numOfAttacks)) * (CritChance / hitChancePow) * _perTurnCritDamage);
+
+                powA = (((_baseDamage + 10) * Advantage(hitChancePow)) + (_critBonus * Advantage(CritChance))) * _numOfAttacks;
+                powA += ((1 - MathF.Pow(1 - Advantage(hitChancePow), _numOfAttacks)) * _perTurnBaseDamage);
+                powA += ((1 - MathF.Pow(1 - Advantage(hitChancePow), _numOfAttacks)) * (Advantage(CritChance) / Advantage(hitChancePow)) * _perTurnCritDamage);
+
+                powD = (((_baseDamage + 10) * Disadvantage(hitChancePow)) + (_critBonus * Disadvantage(CritChance))) * _numOfAttacks;
+                powD += ((1 - MathF.Pow(1 - Disadvantage(hitChancePow), _numOfAttacks)) * _perTurnBaseDamage);
+                powD += ((1 - MathF.Pow(1 - Disadvantage(hitChancePow), _numOfAttacks)) * (Disadvantage(CritChance) / Advantage(hitChancePow)) * _perTurnCritDamage);
+
+                // Set Y axis for graphs (DPR) ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+                _dprByAC[i].y = dpr;
+                _dprAByAC[i].y = dprA;
+                _dprDByAC[i].y = dprD;
+
+                _powByAC[i].y = pow;
+                _powAByAC[i].y = powA;
+                _powDByAC[i].y = powD;
+
+                // Set max graph size for each graph ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+                _maxGraphSizes[0] = MathF.Max(_maxGraphSizes[0], dpr);
+                _maxGraphSizes[1] = MathF.Max(_maxGraphSizes[1], dprA);
+                _maxGraphSizes[2] = MathF.Max(_maxGraphSizes[2], dprD);
+                _maxGraphSizes[3] = MathF.Max(_maxGraphSizes[3], pow);
+                _maxGraphSizes[4] = MathF.Max(_maxGraphSizes[4], powA);
+                _maxGraphSizes[5] = MathF.Max(_maxGraphSizes[5], powD);
             }
 
             int maxY = Graph.RoundGraphSize((int)GraphScale);
@@ -421,9 +470,11 @@ namespace DPRCalculator
 
         public void Draw()
         {
+            // Draw Interactables ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
             for (int x = 0; x < interactables.Length; ++x)
                 interactables[x].Draw();
 
+            // Draw Outputs ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
             _damageText.Draw();
             _damageOutput.Draw();
 
@@ -451,10 +502,12 @@ namespace DPRCalculator
             _powHitChanceOnceText.Draw();
             _powToHitOnce.Draw();
 
+            // Draw graphs ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
             Raylib.DrawRectangleRec(new Rectangle(830, 50, 650, 360), Color.RAYWHITE);
             Raylib.DrawLine(870, 50, 870, 370, Color.BLACK);
             Raylib.DrawLine(870, 370, 1480, 370, Color.BLACK);
 
+            // Draw graph x axis
             for(int x = 5; x <= 30; ++x)
             {
                 int textSize = (int)(Raylib.MeasureText(x.ToString(), 16) / 2.0f);
@@ -463,6 +516,7 @@ namespace DPRCalculator
 
             int data = Graph.RoundGraphSize((int)GraphScale, out float scale, out float magnitude);
 
+            // Draw graph y axis
             if (data != 0)
             {
                 int iterator = 0;
@@ -486,6 +540,7 @@ namespace DPRCalculator
                 }
             }
 
+            // Draw graph lines
             if (_dprToggle.GetData())
                 _dprGraph.Draw();
             if (_dprAToggle.GetData())

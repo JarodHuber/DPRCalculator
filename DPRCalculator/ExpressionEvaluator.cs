@@ -88,7 +88,14 @@ namespace DPRCalculator
                 string op = operatorStack.Pop();
                 double arg2 = operandStack.Pop();
                 double arg1 = operandStack.Pop();
-                operandStack.Push(s_operations[Array.IndexOf(s_operators, op)](arg1, arg2));
+
+                if (op != "d")
+                    operandStack.Push(s_operations[Array.IndexOf(s_operators, op)](arg1, arg2));
+                else
+                {
+                    operandStack.Push(s_operations[Array.IndexOf(s_operators, op) + (int)dieType](arg1, arg2));
+                    critBonus += (float)s_operations[Array.IndexOf(s_operators, op) + (int)dieType](arg1, arg2);
+                }
             }
             return operandStack.Pop();
         }

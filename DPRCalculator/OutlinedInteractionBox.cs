@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DPRCalculator
 {
-    class OutlinedInteractionBox : Interactable
+    class OutlinedInteractionBox : IInteractable
     {
         private Rectangle _rect;
         private InteractionBox _interactionBox;
